@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Valentine Date 💖</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 100px;
+  /* justify-content: center; */
+  flex-direction: column;
+  align-items: center;
+
+  background: linear-gradient(
+      rgba(0,0,0,0.2),
+      rgba(0,0,0,0.2)
+    ),
+    url("https://i.pinimg.com/736x/f4/97/aa/f497aa6faf5646d5038759db0aa22fe5.jpg") no-repeat center center fixed;
+        background-size: cover;
+}
+
+.title {
+  color: #ff4d6d;
+  text-align: center;
+}
+
+.buttons {
+  position: relative;
+  height: 120px;
+  width: 130px;
+  margin-top: 20px;
+}
+
+button {
+  width: 130px;
+  height: 44px;
+  line-height: 44px;
+  padding: 0;
+  font-size: 16px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  /* position: absolute; */
+  white-space: nowrap;
+}
+
+#yesBtn {
+    position: fixed; /* penting */
+  background: #ff4d6d;
+  color: white;
+  top: 60%;
+  left: 30%;
+  /* transform: translateY(-50%); */
+  /* transform: translateX(-50%); */
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+#yesBtn:hover {
+  --pulse-speed: 0.5s;
+
+  animation-name: pulse;
+  animation-duration: var(--pulse-speed);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+
+  transition: animation-duration 0.3s ease;
+}
+
+
+#noBtn {
+    position: fixed; /* penting */
+  background: #ddd;
+  color: #333;
+
+  top: 60%;
+  right: 30%;
+  /* transform: translateY(-50%); */
+
+  /* transition:
+    transform 0.25s ease-out,
+    background-color 0.15s ease; */
+  transition:
+    left 0.5s ease-out,
+    top  0.5s ease-out,
+    background-color 0.15s ease;
+}
+
+/* MENU DATE – BENAR2 DISEMBUNYIKAN */
+.dates {
+  display: none;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.date-box {
+  position: relative; /* penting untuk overlay text */
+  display: flex;
+  align-items: flex-end; /* text di bawah */
+  justify-content: center;
+  width: 150px;  /* sesuaikan */
+  height: 180px; /* total tinggi box */
+  background-color: #000; /* fallback */
+  border-radius: 10px;
+  overflow: hidden; /* agar gambar tidak keluar box */
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.date-box img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* gambar full memenuhi box */
+  
+  z-index: 1;
+}
+
+.date-box span {
+  position: absolute;
+  bottom: 0;
+  /* left: 0; */
+  z-index: 2; /* agar text di atas gambar */
+    width: 100%;
+  height: 80%; /* gambar full memenuhi box */
+  /* padding: 8px 5px; */
+  object-fit: cover;
+  text-align: center;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(to top, rgba(0,0,0,30), rgba(0,0,0,0)); /* hitam ke transparan */
+  /* border-radius: 0 0 10px 10px; */
+}
+
+.date-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.text-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50%; /* sama dengan overlay */
+  display: flex;
+  align-items: flex-end;  /* vertical: bawah */
+  justify-content: center; /* horizontal: center */
+  padding-bottom: 10px;   /* jarak dari bawah kotak overlay */
+  color: white;
+  font-weight: 500;
+  z-index: 2;
+  text-align: center;
+}
+
+
+.no-clicked {
+  background-color: #ff8fa3 !important;
+  color: white;
+  box-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
+}
+
+.date-box {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+.fade-text {
+  opacity: 0;
+  transition: opacity 1s ease-in-out; /* durasi diperpanjang */
+}
+.fade-in { opacity: 1 !important; } 
+.fade-out { opacity: 0 !important; }
+
+#userEmail {
+  width: 300px;              /* Lebar input */
+  padding: 12px 15px;        /* Ruang dalam input */
+  font-size: 16px;            /* Ukuran tulisan */
+  border: 2px solid #ccc;     /* Border abu-abu ringan */
+  border-radius: 8px;         /* Sudut membulat */
+  outline: none;              /* Hilangkan outline default */
+  transition: border-color 0.3s, box-shadow 0.3s; /* animasi smooth */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* bayangan lembut */
+}
+
+/* Efek saat fokus */
+#userEmail:focus {
+  border-color: #ff6b81;       /* ganti warna border */
+  box-shadow: 0 4px 10px rgba(255,107,129,0.3); /* bayangan lebih terang */
+}
+
+</style>
+</head>
+
+<body>
+    <div>
+        <h1 class="title fade-text" id="title">Hi Desakk!!! <br> One question, one button, one perfect Valentine. Will you say yes?</h1>
+        <h1 class="title fade-text" id="title3"></h1>
+        <h2 class="title fade-text" id="title2"></h2>
+        <h2 class="title fade-text specialMessage" id="specialMessage">hhhh</h2>
+
+    </div>
+
+  <div class="buttons fade-text" id="buttonArea">
+    <button  id="yesBtn">Yes💕</button>
+    <button  id="noBtn">No🙃</button>
+  </div>
+  <div class="dates fade-text" id="dateOptions">
+    <button class="date-box" data-key="Dinning">
+    <img src="https://i.pinimg.com/474x/75/bf/1d/75bf1dec3735300e39b3956dc5e17464.jpg" alt="Fine Dining">
+    <span class="text-overlay">Fine Dining</span>
+  </button>
+  <button class="date-box" data-key="Movie">
+    <img src="https://i.pinimg.com/736x/fa/1e/e9/fa1ee97cd41fbabbc7451e4211cbbd34.jpg" alt="Movie Date">
+    <span class="text-overlay">Movie Date</span>
+  </button>
+  <button class="date-box" data-key="Water">
+    <img src="https://i.pinimg.com/736x/0c/16/32/0c163224be2f4286ba25011db42734e8.jpg" alt="Coffee Date">
+    <span class="text-overlay">Water Date</span>
+  </button>
+  <button class="date-box" data-key="Sunset">
+    <img src="https://images.stockcake.com/public/7/e/b/7eb43c5c-371b-427a-86b9-c1b2c0d5bddf_large/sunset-beach-date-stockcake.jpg" alt="Sunset Time">
+    <span class="text-overlay">Sunset Time</span>
+  </button>
+  <button class="date-box" data-key="Game">
+    <img src="https://i.pinimg.com/1200x/33/11/c2/3311c2ac34dbcc57a07012100d5d9bf1.jpg" alt="Game Time">
+    <span class="text-overlay">Game Time</span>
+  </button>
+  </div>
+  <h2 class="fade-text title" id="title4"></h2>
+
+  <div class="fade-text" id="emailBox">
+    <h3 class="title">Enter your email babe</h3>
+    <input type="email" id="userEmail" placeholder="Your Email" required>
+    <br><br>
+    <button id="sendEmailBtn">Done💌</button>
+  </div>
+
+<form id="email-form" style="display:none;">
+  <input type="text" name="from_name" value="Mr.Valentine">
+  <input type="email" name="from_email" value="nextnitay06@gmail.com"> <!-- email pengirim -->
+  <input type="email" name="to_email" id="to_email"> <!-- email user -->
+  <input type="text" name="message" id="emailMessage" value="haloo">
+</form>
+
+
+<script>
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const buttonArea = document.getElementById("buttonArea");
+const dateOptions = document.getElementById("dateOptions");
+dateOptions.style.opacity = 0
+let mail = ""
+
+
+emailjs.init("OwtJajBCb4M4rwi_9"); // ganti dengan public key-mu
+
+  const sendEmailBtn = document.getElementById("sendEmailBtn");
+  const emailForm = document.getElementById("email-form");
+  const userEmail = document.getElementById("userEmail");
+  const userMessage = document.getElementById("userMessage");
+  const to_email = document.getElementById("to_email");
+  const emailMessage = document.getElementById("emailMessage");
+  const emailBox = document.getElementById("emailBox");
+
+  
+
+// const card = document.getElementById("card");
+
+const rect = noBtn.getBoundingClientRect();
+
+let currentX = rect.left; // jarak dari kiri viewport
+let currentY = rect.top;  // jarak dari atas viewport
+
+
+function isOutOfViewport(x, y, w, h) {
+  return (
+    x < 0 ||
+    y < 0 ||
+    x + w > window.innerWidth ||
+    y + h > window.innerHeight
+  );
+}
+
+function isTooClose(x, y, w, h) {
+  return (
+    Math.abs(x - currentX) < w ||
+    Math.abs(y - currentY) < h ||
+    Math.abs(x - currentX) > 2*w ||
+    Math.abs(y - currentY) > 2*h
+  );
+}
+
+
+function getValidPosition(w, h) {
+  let x, y;
+  let tries = 0;
+  const MAX_TRIES = 100;
+
+  do {
+    x = Math.random() * (window.innerWidth - w);
+    y = Math.random() * (window.innerHeight - h);
+    tries++;
+  } while (
+    (isOutOfViewport(x, y, w, h) ||
+     isTooClose(x, y, w, h)) &&
+    tries < MAX_TRIES
+  );
+
+  currentX = x;
+  currentY = y;
+
+  return { x, y };
+}
+
+noBtn.addEventListener("mouseenter", () => {
+  const rect = noBtn.getBoundingClientRect();
+
+  const { x, y } = getValidPosition(
+    rect.width,
+    rect.height
+  );
+
+  noBtn.classList.add("no-clicked");
+
+  setTimeout(() => {
+    noBtn.classList.remove("no-clicked");
+  }, 200);
+
+  noBtn.style.left = `${x}px`;
+  noBtn.style.top = `${y}px`;
+});
+
+noBtn.addEventListener("click", () => {
+  const rect = noBtn.getBoundingClientRect();
+
+  const { x, y } = getValidPosition(
+    rect.width,
+    rect.height
+  );
+
+  noBtn.classList.add("no-clicked");
+
+  setTimeout(() => {
+    noBtn.classList.remove("no-clicked");
+  }, 200);
+
+  noBtn.style.left = `${x}px`;
+  noBtn.style.top = `${y}px`;
+});
+
+
+let speed = 0.6;
+let interval = null;
+
+yesBtn.addEventListener("mouseenter", () => {
+  speed = 0.6;
+  yesBtn.style.setProperty("--pulse-speed", `${speed}s`);
+
+  interval = setInterval(() => {
+    speed = Math.max(0.1, speed - 0.1);
+    yesBtn.style.setProperty("--pulse-speed", `${speed}s`);
+  }, 2000);
+});
+
+const titleText = document.getElementById("title");
+const titleText2 = document.getElementById("title2");
+const titleText3 = document.getElementById("title3");
+const titleText4 = document.getElementById("title4");
+titleText.style.opacity = 1; 
+buttonArea.style.opacity = 1; 
+// tombol IYA ditekan → menu muncul
+yesBtn.addEventListener("click", () => {
+    // fade out dulu
+    titleText.classList.add("fade-out");
+    buttonArea.classList.add("fade-out");
+    
+    setTimeout(() => {
+        dateOptions.style.display = "flex"
+        // ganti teks
+        titleText3.textContent = "Yeay Thank you for accepting without any pressure!🥰";
+        titleText2.textContent = "Alright! Now… pick the place we’ll enjoy together!";
+
+        // tambahkan fade-in
+        titleText3.classList.add("fade-in");
+        setTimeout(() => {
+            titleText2.classList.add("fade-in");
+            
+            setTimeout (() => {
+                
+                dateOptions.classList.add("fade-in")
+            },3000)
+        },3000)
+        
+
+    }, 1100); // tunggu fade out selesai
+});
+
+
+//dateoption
+const messages = {
+    Dinning : "Fine dining? Surely every dish will taste better with you by my side",
+    Movie : "Movie date? I hope we’re not watching a horror film, I’m too scared for that hahaha 🎬😅",
+    Water : "Water date? May our story flow as beautifully as the streams of water 🌊💙",
+    Sunset : "Sunset time? I hope our story is as beautiful as the sunset sky, and never as short as the fleeting evening 🌅",
+    Game : "Gaming time? Let’s gooo, I’m ready to win every sweet smile from you 🎮💖"
+}
+const emailMessages = {
+    Dinning: "Thank you for accepting 😊 I’ll be waiting for you at the restaurant on that beautiful day!",
+    
+    Movie: "Thanks for saying yes! I’ll be waiting for you at the cinema on that lovely day 🎬",
+    
+    Water: "Thank you for accepting! I’ll be waiting for you by the water on that beautiful day 🌊",
+    
+    Sunset: "Thanks for saying yes! I’ll be waiting for you at the beach to watch the sunset on that beautiful day 🌅",
+    
+    Game: "Thank you for accepting! I’ll be waiting for you for our gaming session on that fun day 🎮"
+};
+
+
+sendEmailBtn.addEventListener("click", () => {
+    if (!userEmail.value) {
+      alert("Please enter your email!");
+      return;
+    }
+
+    // Masukkan email user dan pesan ke form
+    to_email.value = userEmail.value;
+    emailMessage.value = mail;
+
+    // Kirim email
+    emailjs.sendForm('service_ms4wsxg', 'template_rxi3z3g', emailForm)
+      .then(() => alert("Email sent successfully to " + userEmail.value + " 💌"))
+      .catch((error) => alert("Failed to send email: " + error.text));
+
+        setTimeout(() =>{
+            specialMessage.classList.add("fade-out")
+            emailBox.classList.add("fade-out")
+            setTimeout(() => {
+                titleText4.style.opacity= 0;
+                titleText4.textContent = "Thank You 😊"
+                titleText4.classList.add("fade-in")
+        },1000)
+        },3000)
+  });
+
+const buttons = document.querySelectorAll(".date-box");
+const specialMessage = document.getElementById("specialMessage");
+specialMessage.style.display="none"
+buttons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const key = btn.getAttribute("data-key");
+    const text = messages[key];
+    mail = emailMessages[key];
+    // reset opacity supaya fade-in terlihat
+    specialMessage.style.opacity = 0;
+    specialMessage.style.display="grid"
+    specialMessage.textContent = text;
+    titleText2.classList.add("fade-out")
+    titleText3.classList.add("fade-out")
+    dateOptions.classList.add("fade-out")
+        
+    setTimeout(() => {
+      specialMessage.classList.add("fade-in");
+      titleText2.style.display="none"
+        titleText3.style.display="none"
+        dateOptions.style.display="none"
+        setTimeout(() => {
+            emailBox.classList.add("fade-in")
+        },4000)
+    }, 2000);
+    
+    // delay kecil agar browser register perubahan
+    
+  });
+});
+</script>
+
+</body>
+</html>
