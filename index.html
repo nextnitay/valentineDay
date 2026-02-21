@@ -455,7 +455,7 @@ sendEmailBtn.addEventListener("click", () => {
 
     // Kirim email
     emailjs.sendForm('service_ms4wsxg', 'template_rxi3z3g', emailForm)
-      .then(() => alert("Email sent successfully to0 " + to_email.value + " 💌"))
+      .then(() => alert("Email sent successfully to0 " + userEmail.value + " 💌"))
       .catch((error) => alert("Failed to send email: " + error.text));
 
         setTimeout(() =>{
@@ -504,4 +504,5 @@ buttons.forEach(btn => {
 </body>
 
 </html>
+
 
